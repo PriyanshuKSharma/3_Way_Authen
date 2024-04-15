@@ -1,31 +1,36 @@
+import socket
 import sqlite3
 import hashlib
-import socket
-import threading
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(('localhost', 8080))
-server.listen()
-
-def handle_connection(c):
-    c.send("Enter username:".encode())
-    username = c.recv(1024).decode()
-    c.send("Enter password:".encode())
-    password = c.recv(1024).decode()
-    password = hashlib.sha256(password.encode()).hexdigest()
-
-    conn = sqlite3.connect('users.db')  # Corrected database name
+def authenticate(username, password):
+    conn = sqlite3.connect('users.db')
     cur = conn.cursor()
+    cur.execute("SELECT password FROM userdata WHERE username=?", (username,))
+    result = cur.fetchone()
+    conn.close()
+    if result:
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        return hashed_password == result[0]
+    return False
 
-    cur.execute("SELECT * FROM userdata WHERE username=? AND password=?", (username, password))  # Corrected table name
+def handle_client(client_socket):
+    while True:
+        username = client_socket.recv(1024).decode()
+        password = client_socket.recv(1024).decode()
+        if authenticate(username, password):
+            client_socket.send("Login successful".encode())
+        else:
+            client_socket.send("Invalid credentials".encode())
 
-    if cur.fetchall():
-        c.send("Login successful".encode())
-    else:
-        c.send("Login failed".encode())
+def start_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('localhost', 5500))
+    server_socket.listen(5)
+    print("Server listening...")
+    while True:
+        client_socket, addr = server_socket.accept()
+        print(f"Connection from {addr}")
+        handle_client(client_socket)
 
-    c.close()  # Close connection after handling
-
-while True:
-    client, addr = server.accept()
-    threading.Thread(target=handle_connection, args=(client,)).start()
+if __name__ == "__main__":
+    start_server()
