@@ -1,32 +1,48 @@
-import socket
 import tkinter as tk
-from tkinter import messagebox
+import socket
+import hashlib
 
-def login(username, password):
+def generate_hash(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def authenticate():
+    username = username_entry.get()
+    password = password_entry.get()
+    password_hash = generate_hash(password)  # Generate hash for the password
+    
+    host = '127.0.0.1'
+    port = 12345
+
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('localhost', 5500))
-    client_socket.send(username.encode())
-    client_socket.send(password.encode())
+    client_socket.connect((host, port))
+
+    data = username + ',' + password_hash  # Send username and password hash
+    client_socket.send(data.encode())
+
     response = client_socket.recv(1024).decode()
-    messagebox.showinfo("Login Result", response)
+    result_label.config(text=response)
+
     client_socket.close()
 
-def submit_login():
-    username = entry_username.get()
-    password = entry_password.get()
-    login(username, password)
 
-# GUI Setup
+# GUI setup
 root = tk.Tk()
-root.title("Login")
-label_username = tk.Label(root, text="Username:")
-label_username.pack()
-entry_username = tk.Entry(root)
-entry_username.pack()
-label_password = tk.Label(root, text="Password:")
-label_password.pack()
-entry_password = tk.Entry(root, show="*")
-entry_password.pack()
-button_login = tk.Button(root, text="Login", command=submit_login)
-button_login.pack()
+root.title("Client")
+
+username_label = tk.Label(root, text="Username:")
+username_label.grid(row=0, column=0, padx=10, pady=5)
+username_entry = tk.Entry(root)
+username_entry.grid(row=0, column=1, padx=10, pady=5)
+
+password_label = tk.Label(root, text="Password:")
+password_label.grid(row=1, column=0, padx=10, pady=5)
+password_entry = tk.Entry(root, show="*")
+password_entry.grid(row=1, column=1, padx=10, pady=5)
+
+login_button = tk.Button(root, text="Login", command=authenticate)
+login_button.grid(row=2, column=0, columnspan=2, padx=10, pady=5)
+
+result_label = tk.Label(root, text="")
+result_label.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
+
 root.mainloop()
