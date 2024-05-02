@@ -14,8 +14,10 @@ Installation
 To use this OTP implementation in your project, follow these steps:
 
 # Clone this repository to your local machine:
-bash
-``` git clone https://github.com/your-username/otp-implementation.git
+  bash
+  ''' 
+  git clone https://github.com/your-username/otp-implementation.git '''
+  
 
 Integrate the OTP generation and validation logic into your application codebase.
 Install any required dependencies or libraries specified in the project documentation.
