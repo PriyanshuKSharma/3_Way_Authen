@@ -16,7 +16,7 @@ Robust error handling and retry mechanisms for a seamless user experience.<br>
 To use this OTP implementation in your project, follow these steps:<br>
 
 ### Clone this repository to your local machine:<br>
-    git clone https://github.com/your-username/otp-implementation.git 
+    git clone https://github.com/PriyanshuKSharma/3_Way_Authen.git
 
 Integrate the OTP generation and validation logic into your application codebase.<br>
 Install any required dependencies or libraries specified in the project documentation.<br>
