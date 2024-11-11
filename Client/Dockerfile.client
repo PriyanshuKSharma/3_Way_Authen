@@ -1,0 +1,10 @@
+# Client/Dockerfile.client
+FROM python:3.8-slim
+
+WORKDIR /app
+
+COPY Client/client.py /app/
+
+RUN apt-get update && apt-get install -y python3-tk
+
+CMD ["python", "client.py"]
