@@ -1,0 +1,12 @@
+# Server/Dockerfile.server
+FROM python:3.8-slim
+
+WORKDIR /app
+
+# Copy server and database files
+COPY Server/server.py /app/
+COPY users.db /app/
+
+EXPOSE 12345
+
+CMD ["python", "server.py"]
